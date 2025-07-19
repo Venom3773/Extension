@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Stock News</title>
+  <style>
+    html, body {
+      background: transparent !important;
+      margin: 0;
+      padding: 0;
+      width: 340px;
+      height: 460px;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+    #wrapper {
+      padding: 15px;
+      box-sizing: border-box;
+      width: 100%;
+      height: 100%;
+      border-radius: 20px;
+      overflow: hidden;
+    }
+    #container {
+      background: linear-gradient(135deg, rgba(255,255,255,0.4), rgba(255,255,255,0.2));
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 20px;
+      padding: 15px;
+      box-shadow: 0 8px 21px rgba(31,38,135,0.37);
+      border: 1px solid rgba(255,255,255,0.18);
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;
+    }
+    #header {
+      display: flex;
+      width: 100%;
+      margin-bottom: 10px;
+      align-items: center;
+    }
+    #header-left {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    #logo-button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 5px;
+      flex: 0 0 auto;
+    }
+    #logo-button img {
+      width: 24px;
+      height: 24px;
+    }
+    #search-input {
+      width: 100px;
+      padding: 8px 10px;
+      border: none;
+      border-radius: 20px;
+      background-color: rgba(255,255,255,0.8);
+      font-size: 10px;
+      outline: none;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+    }
+    #header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 0 0 auto;
+    }
+    #header-right button {
+      flex: 0 0 1px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 1px;
+      font-size: 16px;
+      color: #333;
+      text-align: center;
+      line-height: 20px;
+      font-family: Arial, sans-serif;
+    }
+    #search-button svg,
+    #reload-button svg,
+    #bookmarks-button svg {
+      vertical-align: middle;
+      width: 16px;
+      height: 16px;
+    }
+    #news-feed {
+      flex: 1;
+      overflow-y: scroll;
+      padding-right: 5px;
+      box-sizing: border-box;
+    }
+    #news-feed::-webkit-scrollbar {
+      width: 6px;
+    }
+    #news-feed::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 3px;
+    }
+    #news-feed::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 3px;
+    }
+    .news-item {
+      margin-bottom: 10px;
+      padding: 8px;
+      background: rgba(255,255,255,0.6);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: #333;
+      border-radius: 15px;
+      text-decoration: none;
+      display: block;
+    }
+    .news-item h3 {
+      font-size: 14px;
+      margin: 0 0 4px 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .news-item p {
+      font-size: 12px;
+      margin: 0 0 4px 0;
+      line-height: 1.2;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .sentiment-details {
+      font-size: 10px;
+      color: #333;
+      margin-bottom: 2px;
+    }
+    .sentiment-bar {
+      height: 8px;
+      width: 100%;
+      border-radius: 4px;
+      margin-bottom: 4px;
+      background: #e0e0e0; /* Default background */
+    }
+    .action-buttons {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 5px;
+    }
+    .action-buttons button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      margin-left: 5px;
+      font-size: 16px;
+      color: #333;
+    }
+    #modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 340px;
+      height: 460px;
+      background-color: rgba(0,0,0,0.5);
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(5px);
+    }
+    #modal-content {
+      background-color: #fff;
+      padding: 15px;
+      border-radius: 10px;
+      width: 80%;
+      max-height: 80%;
+      overflow-y: auto;
+      position: relative;
+      font-size: 14px;
+    }
+    #modal-content h2 {
+      margin-top: 0;
+      font-size: 16px;
+    }
+    #modal-content p {
+      line-height: 1.4;
+      white-space: pre-wrap;
+    }
+    #modal-close {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      cursor: pointer;
+      font-size: 18px;
+      color: #333;
+    }
+    #settings {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .toggle-container {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 40px;
+      height: 20px;
+    }
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: 0.4s;
+      border-radius: 20px;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 2px;
+      bottom: 2px;
+      background-color: white;
+      transition: 0.4s;
+      border-radius: 50%;
+    }
+    input:checked + .slider {
+      background-color: #2196F3;
+    }
+    input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+    #api-key {
+      margin-top: 5px;
+      padding: 5px;
+      width: 100%;
+      border-radius: 5px;
+      background-color: rgba(255, 255, 255, 0.8);
+      border: none;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+</head>
+<body>
+  <div id="wrapper">
+    <div id="container">
+      <div id="header">
+        <div id="header-left">
+          <button id="logo-button" title="Home">
+            <img src="icon.png" alt="Brand Logo">
+          </button>
+          <input type="text" id="search-input" placeholder="Enter ticker or keywords">
+        </div>
+        <div id="header-right">
+          <button id="search-button" title="Search">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </button>
+          <button id="reload-button" title="Reload News">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21.5 2v6h-6"></path>
+              <path d="M2.5 22v-6h6"></path>
+              <path d="M2 11.5a10 10 0 0 1 18.8-4.3l1.2 1.2"></path>
+              <path d="M22 12.5a10 10 0 0 1-18.8 4.3l-1.2-1.2"></path>
+            </svg>
+          </button>
+          <button id="bookmarks-button" title="Bookmarks">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div id="settings">
+        <div class="toggle-container">
+          <span>RSS</span>
+          <label class="switch">
+            <input type="checkbox" id="news-mode-toggle">
+            <span class="slider"></span>
+          </label>
+          <span>API</span>
+        </div>
+        <input type="text" id="api-key" placeholder="Enter API Key" style="display: none;">
+      </div>
+      <div id="news-feed"></div>
+    </div>
+  </div>
+
+  <div id="modal">
+    <div id="modal-content">
+      <span id="modal-close" title="Close">✖</span>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

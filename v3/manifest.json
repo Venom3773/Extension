@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "Stock News Copilot 🧑‍✈️",
+  "version": "1.4",
+  "description": "Fetches stock news, analyzes sentiment, and summarizes articles with bookmarking, keyword/ticker search, and offline saving.",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "scripting",
+    "notifications"
+  ],
+  "host_permissions": [
+    "https://newsapi.org/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": "icon.png"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  }
+}
