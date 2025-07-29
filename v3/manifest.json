@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Stock News Copilot 🧑‍✈️",
+  "name": "Stock News Copilot 1 🧑‍✈️",
   "version": "1.4",
   "description": "Fetches stock news, analyzes sentiment, and summarizes articles with bookmarking, keyword/ticker search, and offline saving.",
   "permissions": [
@@ -20,7 +20,9 @@
       "matches": ["<all_urls>"],
       "js": ["content.js"]
     }
-  ],
+  ],"icons": {
+    "48": "/icon.png"
+  },
   "action": {
     "default_popup": "popup.html",
     "default_icon": "icon.png"

@@ -70,12 +70,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 });
 
-chrome.tabs.onActivated.addListener(() => {
-  currentTicker = null;
-  generalPage = 1;
-  generalArticles = [];
-  console.log("Tab changed—resetting news fetch");
-});
+// Removed the chrome.tabs.onActivated.addListener block from here.
 
 async function fetchNews(ticker = null, page = 1, forceRefresh = false) {
   const cacheKey = ticker ? `news_${ticker}_${page}` : `general_${page}`;
