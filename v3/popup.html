@@ -1,167 +1,405 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Stock News</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
+    /* CSS Variables for theming */
+    :root {
+      /* Light Mode Defaults */
+      --body-bg: #f8f9fa;
+      --container-bg: #ffffff;
+      --text-color: #333;
+      --header-icon-color: #555;
+      --input-bg: #f7f7f7;
+      --input-border: #e0e0e0;
+      --input-focus-border: #6a8cd2;
+      --input-focus-shadow: rgba(106, 140, 210, 0.2);
+      --card-bg: #ffffff;
+      --card-border: #e9ecef;
+      --card-shadow: rgba(0,0,0,0.05);
+      --card-hover-bg: #f7fafd;
+      --card-hover-shadow: rgba(0,0,0,0.08);
+      --title-color: #2c3e50;
+      --description-color: #555;
+      --sentiment-detail-color: #666;
+      --scrollbar-track: #f1f1f1;
+      --scrollbar-thumb: #c0c0c0;
+      --scrollbar-thumb-hover: #a0a0a0;
+      --modal-bg: rgba(0, 0, 0, 0.5);
+      --modal-content-bg: #fff;
+      --modal-content-shadow: rgba(0,0,0,0.2);
+      --modal-close-color: #888;
+      --modal-close-hover-color: #333;
+      --no-news-color: #888;
+      --toggle-off-bg: #ccc;
+      --toggle-on-bg: #6a8cd2;
+      --toggle-thumb-bg: white;
+    }
+
+    /* Dark Mode Overrides */
+    body.dark-mode {
+      --body-bg: #282c34; 
+      --container-bg: #32363e;
+      --text-color: #e0e0e0;
+      --header-icon-color: #a0a0a0;
+      --input-bg: #3a3f47;
+      --input-border: #4a4f57;
+      --input-focus-border: #7aa5ea;
+      --input-focus-shadow: rgba(122, 165, 234, 0.25);
+      --card-bg: #3a3f47;
+      --card-border: #4a4f57;
+      --card-shadow: rgba(0,0,0,0.2);
+      --card-hover-bg: #424750;
+      --card-hover-shadow: rgba(0,0,0,0.3);
+      --title-color: #ffffff;
+      --description-color: #cccccc;
+      --sentiment-detail-color: #b0b0b0;
+      --scrollbar-track: #3a3f47;
+      --scrollbar-thumb: #555;
+      --scrollbar-thumb-hover: #777;
+      --modal-bg: rgba(0, 0, 0, 0.7);
+      --modal-content-bg: #3a3f47;
+      --modal-content-shadow: rgba(0,0,0,0.4);
+      --modal-close-color: #b0b0b0;
+      --modal-close-hover-color: #ffffff;
+      --no-news-color: #b0b0b0;
+      --toggle-off-bg: #555;
+      --toggle-on-bg: #7aa5ea;
+      --toggle-thumb-bg: #e0e0e0;
+    }
+
+    /* Global Styles - use CSS variables */
     html, body {
-      background: transparent !important;
       margin: 0;
       padding: 0;
-      width: 340px;
-      height: 460px;
-      box-sizing: border-box;
-      font-family: Arial, sans-serif;
+      width: 340px; 
+      height: 460px; 
+      font-family: 'Inter', sans-serif;
+      background-color: var(--body-bg); 
+      color: var(--text-color);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
+
     #wrapper {
       padding: 15px;
       box-sizing: border-box;
       width: 100%;
       height: 100%;
-      border-radius: 20px;
-      overflow: hidden;
     }
+
     #container {
-      background: linear-gradient(135deg, rgba(255,255,255,0.4), rgba(255,255,255,0.2));
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-radius: 20px;
-      padding: 15px;
-      box-shadow: 0 8px 21px rgba(31,38,135,0.37);
-      border: 1px solid rgba(255,255,255,0.18);
+      background-color: var(--container-bg); 
+      border-radius: 12px;
+      padding: 18px;
+      box-shadow: 0 6px 20px var(--card-shadow); 
       width: 100%;
       height: 100%;
-      overflow: hidden;
       display: flex;
       flex-direction: column;
       box-sizing: border-box;
+      transition: background-color 0.3s ease, box-shadow 0.3s ease; 
     }
+
+    /* Header */
     #header {
       display: flex;
-      width: 100%;
-      margin-bottom: 10px;
       align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
     }
+
     #header-left {
-      flex: 1;
+      flex-shrink: 0; 
       display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 10px;
     }
+
     #logo-button {
       background: none;
       border: none;
       cursor: pointer;
-      padding: 5px;
-      flex: 0 0 auto;
+      padding: 6px;
+      border-radius: 8px;
+      transition: background-color 0.2s ease;
     }
+
+    #logo-button:hover {
+      background-color: var(--card-hover-bg); 
+    }
+
     #logo-button img {
-      width: 24px;
-      height: 24px;
+      width: 28px;
+      height: 28px;
+      transition: filter 0.3s ease;
     }
+
+
     #search-input {
-      width: 100px;
-      padding: 8px 10px;
-      border: none;
-      border-radius: 20px;
-      background-color: rgba(255,255,255,0.8);
-      font-size: 10px;
+      flex: 1; 
+      min-width: 50px; 
+      padding: 10px 14px;
+      border: 1px solid var(--input-border); 
+      border-radius: 25px;
+      background-color: var(--input-bg); 
+      font-size: 13px;
       outline: none;
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+      color: var(--text-color); 
+      transition: border-color 0.3s, box-shadow 0.3s, background-color 0.3s, color 0.3s;
     }
+
+    #search-input::placeholder {
+        color: var(--sentiment-detail-color); 
+    }
+
+    #search-input:focus {
+      border-color: var(--input-focus-border); 
+      box-shadow: 0 0 0 3px var(--input-focus-shadow); 
+      background-color: var(--container-bg); 
+    }
+
     #header-right {
       display: flex;
       align-items: center;
-      gap: 10px;
-      flex: 0 0 auto;
+      gap: 4px; 
+      flex-shrink: 0;
     }
+
     #header-right button {
-      flex: 0 0 1px;
       background: none;
       border: none;
       cursor: pointer;
-      padding: 1px;
+      padding: 6px; 
+      border-radius: 8px;
+      transition: background-color 0.2s ease, transform 0.1s ease, color 0.3s ease;
       font-size: 16px;
-      color: #333;
-      text-align: center;
-      line-height: 20px;
-      font-family: Arial, sans-serif;
+      color: var(--header-icon-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1; 
     }
-    #search-button svg,
-    #reload-button svg,
-    #bookmarks-button svg {
-      vertical-align: middle;
-      width: 16px;
-      height: 16px;
+
+    #header-right button:hover {
+      background-color: var(--card-hover-bg);
+      transform: translateY(-1px);
     }
+
+    #header-right button:active {
+      transform: translateY(0);
+      background-color: var(--card-border);
+    }
+
+    #header-right svg {
+      width: 18px;
+      height: 18px;
+      color: var(--header-icon-color);
+    }
+
+    /* Settings Section */
+    #settings {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+      padding: 0 4px;
+    }
+
+    .toggle-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--sentiment-detail-color);
+    }
+
+    /* Dark mode toggle container within settings */
+    #dark-mode-toggle-container {
+      display: flex;
+      align-items: center;
+      gap: 8px; /* Consistent gap */
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--sentiment-detail-color);
+    }
+    
+
+    /* Common switch styling (for news mode and dark mode) */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 42px;
+      height: 22px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: var(--toggle-off-bg);
+      transition: 0.4s;
+      border-radius: 34px;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: var(--toggle-off-bg);
+      transition: 0.4s;
+      border-radius: 34px;
+    }
+    .slider:before {
+      content: "";
+      position: absolute;
+      height: 18px;
+      width: 18px;
+      left: 2px;
+      bottom: 2px;
+      background-color: var(--toggle-thumb-bg);
+      border-radius: 50%;
+      transition: 0.4s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+
+    body:not(.dark-mode) .theme-slider:before {
+      background-color: #ff9800; 
+    }
+    body.dark-mode .theme-slider:before {
+      background-color: #ffffff; 
+    }
+    .switch input:checked + .slider {
+      background-color: var(--toggle-on-bg);
+    }
+
+    .switch input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+
+    #api-key {
+      margin-top: 5px;
+      padding: 8px 12px;
+      width: 100px;
+      border-radius: 8px;
+      border: 1px solid var(--input-border);
+      font-size: 12px;
+      color: var(--text-color);
+      background-color: var(--input-bg);
+      outline: none;
+      transition: border-color 0.3s, box-shadow 0.3s, background-color 0.3s, color 0.3s;
+    }
+
+    #api-key:focus {
+      border-color: var(--input-focus-border);
+      box-shadow: 0 0 0 3px var(--input-focus-shadow);
+      background-color: var(--container-bg);
+    }
+
+    /* News Feed */
     #news-feed {
       flex: 1;
-      overflow-y: scroll;
-      padding-right: 5px;
-      box-sizing: border-box;
+      overflow-y: auto;
+      padding-right: 8px;
+      padding-bottom: 10px;
     }
+
+    /* Custom Scrollbar */
     #news-feed::-webkit-scrollbar {
-      width: 6px;
+      width: 8px;
     }
+
     #news-feed::-webkit-scrollbar-track {
-      background: rgba(0, 0, 0, 0.1);
-      border-radius: 3px;
+      background: var(--scrollbar-track);
+      border-radius: 4px;
     }
+
     #news-feed::-webkit-scrollbar-thumb {
-      background: rgba(0, 0, 0, 0.4);
-      border-radius: 3px;
+      background: var(--scrollbar-thumb);
+      border-radius: 4px;
     }
+
+    #news-feed::-webkit-scrollbar-thumb:hover {
+      background: var(--scrollbar-thumb-hover);
+    }
+
+    /* News Item */
     .news-item {
-      margin-bottom: 10px;
-      padding: 8px;
-      background: rgba(255,255,255,0.6);
-      border: 1px solid rgba(255,255,255,0.3);
-      color: #333;
-      border-radius: 15px;
-      text-decoration: none;
       display: block;
+      margin-bottom: 15px;
+      padding: 15px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      text-decoration: none;
+      color: var(--text-color);
+      transition: all 0.2s ease-in-out;
+      box-shadow: 0 2px 8px var(--card-shadow);
     }
+
+    .news-item:hover {
+      background-color: var(--card-hover-bg);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px var(--card-hover-shadow);
+    }
+
     .news-item h3 {
-      font-size: 14px;
-      margin: 0 0 4px 0;
-      white-space: nowrap;
+      font-size: 15px;
+      font-weight: 700;
+      margin: 0 0 6px 0;
+      white-space: normal;
       overflow: hidden;
       text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      color: var(--title-color);
     }
+
     .news-item p {
-      font-size: 12px;
-      margin: 0 0 4px 0;
-      line-height: 1.2;
+      font-size: 12.5px;
+      margin: 0 0 8px 0;
+      line-height: 1.5;
+      color: var(--description-color);
       display: -webkit-box;
       -webkit-line-clamp: 3;
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
+
     .sentiment-details {
-      font-size: 10px;
-      color: #333;
-      margin-bottom: 2px;
+      font-size: 11px;
+      color: var(--sentiment-detail-color);
+      margin-bottom: 6px;
+      font-weight: 500;
     }
+
     .sentiment-bar {
       height: 8px;
       width: 100%;
       border-radius: 4px;
-      margin-bottom: 4px;
-      background: #e0e0e0; /* Default background */
+      background: #e0e0e0;
+      overflow: hidden;
     }
-    .action-buttons {
-      display: flex;
-      justify-content: flex-end;
-      margin-top: 5px;
+
+    /* No news available message */
+    #news-feed p {
+      text-align: center;
+      color: var(--no-news-color);
+      font-size: 14px;
+      padding: 20px;
     }
-    .action-buttons button {
-      background: none;
-      border: none;
-      cursor: pointer;
-      margin-left: 5px;
-      font-size: 16px;
-      color: #333;
-    }
+
+    /* Modal */
     #modal {
       display: none;
       position: fixed;
@@ -170,94 +408,83 @@
       top: 0;
       width: 340px;
       height: 460px;
-      background-color: rgba(0,0,0,0.5);
+      background-color: var(--modal-bg);
       align-items: center;
       justify-content: center;
       backdrop-filter: blur(5px);
+      transition: background-color 0.3s ease;
     }
+
     #modal-content {
-      background-color: #fff;
-      padding: 15px;
-      border-radius: 10px;
-      width: 80%;
-      max-height: 80%;
+      background-color: var(--modal-content-bg);
+      padding: 20px;
+      border-radius: 12px;
+      width: 88%;
+      max-height: 90%;
       overflow-y: auto;
-      position: relative;
       font-size: 14px;
+      position: relative;
+      box-shadow: 0 10px 30px var(--modal-content-shadow);
+      animation: fadeInScale 0.3s ease-out;
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
     }
+
+    @keyframes fadeInScale {
+      from {
+        transform: scale(0.95);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
     #modal-content h2 {
       margin-top: 0;
-      font-size: 16px;
+      margin-bottom: 10px;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--title-color);
     }
+
     #modal-content p {
-      line-height: 1.4;
-      white-space: pre-wrap;
+      line-height: 1.6;
+      color: var(--description-color);
+      margin-bottom: 8px;
     }
+
     #modal-close {
       position: absolute;
-      top: 5px;
-      right: 5px;
+      top: 10px;
+      right: 12px;
       cursor: pointer;
-      font-size: 18px;
-      color: #333;
+      font-size: 22px;
+      color: var(--modal-close-color);
+      transition: color 0.2s ease;
     }
-    #settings {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
+
+    #modal-close:hover {
+      color: var(--modal-close-hover-color);
     }
-    .toggle-container {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-    .switch {
-      position: relative;
-      display: inline-block;
-      width: 40px;
-      height: 20px;
-    }
-    .switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-    .slider {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: #ccc;
-      transition: 0.4s;
-      border-radius: 20px;
-    }
-    .slider:before {
-      position: absolute;
-      content: "";
-      height: 16px;
-      width: 16px;
-      left: 2px;
-      bottom: 2px;
-      background-color: white;
-      transition: 0.4s;
-      border-radius: 50%;
-    }
-    input:checked + .slider {
-      background-color: #2196F3;
-    }
-    input:checked + .slider:before {
-      transform: translateX(20px);
-    }
-    #api-key {
-      margin-top: 5px;
-      padding: 5px;
-      width: 100%;
-      border-radius: 5px;
-      background-color: rgba(255, 255, 255, 0.8);
-      border: none;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    /* Additional styles for responsiveness within the fixed popup size, though less critical */
+    @media (max-width: 320px) {
+      #wrapper {
+        padding: 10px;
+      }
+      #container {
+        padding: 12px;
+      }
+      #search-input {
+        font-size: 12px;
+      }
+      .news-item h3 {
+        font-size: 13px;
+      }
+      .news-item p {
+        font-size: 11.5px;
+      }
     }
   </style>
 </head>
@@ -267,44 +494,41 @@
       <div id="header">
         <div id="header-left">
           <button id="logo-button" title="Home">
-            <img src="icon.png" alt="Brand Logo">
+            <img src="icon.png" alt="Logo">
           </button>
-          <input type="text" id="search-input" placeholder="Enter ticker or keywords">
+          <input type="text" id="search-input" placeholder="Enter ticker or keyword">
         </div>
         <div id="header-right">
-          <button id="search-button" title="Search">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="11" cy="11" r="8"></circle>
-              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
+          <button id="reload-button" title="Reload">
+            🗘
           </button>
-          <button id="reload-button" title="Reload News">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21.5 2v6h-6"></path>
-              <path d="M2.5 22v-6h6"></path>
-              <path d="M2 11.5a10 10 0 0 1 18.8-4.3l1.2 1.2"></path>
-              <path d="M22 12.5a10 10 0 0 1-18.8 4.3l-1.2-1.2"></path>
-            </svg>
-          </button>
-          <button id="bookmarks-button" title="Bookmarks">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
-            </svg>
-          </button>
+          <!-- <button id="bookmarks-button" title="Bookmarks">
+            📌
+          </button> -->
         </div>
       </div>
+
       <div id="settings">
         <div class="toggle-container">
           <span>RSS</span>
           <label class="switch">
             <input type="checkbox" id="news-mode-toggle">
-            <span class="slider"></span>
+            <span class="slider rss-api-slider"></span>
           </label>
           <span>API</span>
         </div>
+        <div id="dark-mode-toggle-container">
+          <label class="switch">
+            <input type="checkbox" id="theme-toggle">
+            <span class="slider theme-slider"></span>
+          </label>
+        </div>
+
         <input type="text" id="api-key" placeholder="Enter API Key" style="display: none;">
       </div>
-      <div id="news-feed"></div>
+
+      <div id="news-feed">
+        </div>
     </div>
   </div>
 
@@ -314,6 +538,7 @@
       <div id="modal-body"></div>
     </div>
   </div>
+
   <script src="popup.js"></script>
 </body>
 </html>
