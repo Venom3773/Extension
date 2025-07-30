@@ -8,6 +8,7 @@
   const modalBody = document.getElementById("modal-body");
   const newsModeToggle = document.getElementById("news-mode-toggle");
   const apiKeyInput = document.getElementById("api-key");
+  const apiKeyRow = document.getElementById("api-key-row");
   const searchInput = document.getElementById("search-input");
   const searchButton = document.getElementById("search-button");
   const bookmarksButton = document.getElementById("bookmarks-button");
@@ -131,20 +132,26 @@
   // }
 
   // News mode toggle (RSS/API)
-  if (newsModeToggle && apiKeyInput) {
-    chrome.storage.local.get("newsMode", (data) => {
+  if (newsModeToggle && apiKeyInput && apiKeyRow) {
+    chrome.storage.local.get(["newsMode", "apiKey"], (data) => {
       const isAPI = data.newsMode === "api";
       newsModeToggle.checked = isAPI;
-      apiKeyInput.style.display = isAPI ? "block" : "none";
+      apiKeyRow.style.display = isAPI ? "flex" : "none";
+      apiKeyInput.type = "password";
+      if (data.apiKey) apiKeyInput.value = data.apiKey;
     });
 
     newsModeToggle.addEventListener("change", () => {
       const isAPI = newsModeToggle.checked;
-      apiKeyInput.style.display = isAPI ? "block" : "none";
+      apiKeyRow.style.display = isAPI ? "flex" : "none";
       chrome.storage.local.set({ newsMode: isAPI ? "api" : "rss" });
     });
+
+    apiKeyInput.addEventListener("input", () => {
+      chrome.storage.local.set({ apiKey: apiKeyInput.value });
+    });
   } else {
-    console.error("News mode toggle or API key input not found.");
+    console.error("News mode toggle, API key input, or row not found.");
   }
 
   // Search news
