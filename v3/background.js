@@ -67,10 +67,24 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       sendResponse(newArticles);
     });
     return true; // Keep port open for async response
+  } else if (request.action === "search") {
+    const query = request.query.trim();
+    if (query) {
+      currentTicker = query; // Treat search query as a ticker for filtering
+      generalPage = 1;
+      generalArticles = [];
+      fetchNews(query, 1, true).then(articles => {
+        sendResponse({ articles, isGeneral: false });
+      });
+    } else {
+      fetchNews(null, 1, true).then(articles => {
+        generalArticles = articles;
+        sendResponse({ articles, isGeneral: true });
+      });
+    }
+    return true; // Keep port open for async response
   }
 });
-
-// Removed the chrome.tabs.onActivated.addListener block from here.
 
 async function fetchNews(ticker = null, page = 1, forceRefresh = false) {
   const cacheKey = ticker ? `news_${ticker}_${page}` : `general_${page}`;
