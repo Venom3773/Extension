@@ -2,7 +2,7 @@
   console.log("popup.js loaded");
 
   const newsFeed = document.getElementById("news-feed");
-  const reloadButton = document.getElementById("reload-button");
+  // const reloadButton = document.getElementById("reload-button");
   const modal = document.getElementById("modal");
   const modalCloseButton = document.getElementById("modal-close");
   const modalBody = document.getElementById("modal-body");
@@ -122,13 +122,13 @@
   }
 
   // Reload news
-  if (reloadButton) {
-    reloadButton.addEventListener("click", () => {
-      fetchNews("reload");
-    });
-  } else {
-    console.error("Reload button not found");
-  }
+  // if (reloadButton) {
+  //   reloadButton.addEventListener("click", () => {
+  //     fetchNews("reload");
+  //   });
+  // } else {
+  //   console.error("Reload button not found");
+  // }
 
   // News mode toggle (RSS/API)
   if (newsModeToggle && apiKeyInput) {
@@ -148,18 +148,28 @@
   }
 
   // Search news
-  if (searchButton) {
+  if (searchButton && searchInput) {
     searchButton.addEventListener("click", () => {
       const query = searchInput.value.trim();
       if (query) {
         newsFeed.innerHTML = `<p>Searching for "${query}"...</p>`;
+        chrome.runtime.sendMessage({ action: "search", query }, function(response) {
+          if (chrome.runtime.lastError) {
+            console.warn("Search error:", chrome.runtime.lastError.message);
+            newsFeed.innerHTML = "<p>Failed to search news</p>";
+            return;
+          }
+          if (response && response.articles && response.articles.length > 0) {
+            displayArticles(response.articles);
+          } else {
+            newsFeed.innerHTML = `<p>No news found for "${query}"</p>`;
+          }
+        });
       } else {
         fetchNews("getNews");
       }
     });
-  }
 
-  if (searchInput) {
     searchInput.addEventListener("keypress", (event) => {
       if (event.key === "Enter") {
         event.preventDefault();
